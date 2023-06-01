@@ -1,0 +1,736 @@
+<apex:page
+  showHeader="false"
+  standardcontroller="ozbee__Production_Job_Report__c"
+  extensions="DailyReportPDFController"
+  standardStylesheets="false"
+  sidebar="false"
+  applyBodyTag="false"
+  applyHtmlTag="false"
+  renderAs="PDF"
+>
+  <apex:includeScript value="/canvas/sdk/js/publisher.js" />
+
+  <head>
+    <title>Daily Quality Control &amp; Safety Report - {!TODAY()}</title>
+
+    <style type="text/css" media="print">
+      @page {
+        size: A4 portrait;
+        margin-bottom: 2cm;
+        border: 1px solid #333;
+
+        @top-center {
+          content: element(header);
+        }
+
+        @bottom-center {
+          content: element(footer);
+        }
+
+        @bottom-left {
+          content: element(bottom-left-div);
+        }
+      }
+
+      @page: first {
+        @top-center {
+        }
+      }
+
+      @page: last {
+        @left-middle {
+          content: "LAST PAGE";
+        }
+      }
+
+      div.footer {
+        display: block;
+        padding: 5px;
+        position: running(footer);
+      }
+
+      div.bottom-left-div {
+        display: block;
+        padding: 5px;
+        position: running(bottom-left-div);
+      }
+
+      div.header {
+        display: block;
+        padding: 5px;
+        position: running(header);
+      }
+
+      .pagenumber:before {
+        content: counter(page);
+      }
+
+      .pagecount:before {
+        content: counter(pages);
+      }
+    </style>
+  </head>
+
+  <div
+    class="header"
+    style="
+      font-family: sans-serif, Arial Unicode MS;
+      text-align: center;
+      font-size: 8pt;
+    "
+  >
+    <div>
+      <hr
+        style="height: 1px; border: none; color: #333; background-color: #333"
+      />
+      <table width="100%">
+        <tr>
+          <td style="width: 25%; text-align: left">Transparency Log</td>
+          <td style="width: 50%; text-align: center">
+            {!report.OpportunityName}
+          </td>
+          <td style="width: 25%; text-align: right">
+            <apex:outputText
+              value="{!CASE( MOD( datevalue(report.CreatedDate) - DATE(1900, 1, 7), 7), 0, 'Sunday', 1, 'Monday', 2, 'Tuesday', 3, 'Wednesday', 4, 'Thursday', 5, 'Friday', 6, 'Saturday','Error')}"
+            />&nbsp;
+            <apex:outputText value="{0,date,long}">
+              <apex:param value="{!report.CreatedDate}" />
+            </apex:outputText>
+          </td>
+        </tr>
+      </table>
+
+      <hr
+        style="height: 1px; border: none; color: #333; background-color: #333"
+      />
+    </div>
+  </div>
+
+  <div
+    style="
+      text-align: center;
+      font-family: sans-serif, Arial Unicode MS;
+      font-size: 10pt;
+    "
+  >
+    <div>
+      <apex:image url="{!report.HeaderLogo}" width="30%" />
+
+      <hr
+        style="height: 2px; border: none; color: #333; background-color: #333"
+      />
+      <div style="font-weight: bold">
+        {!$Organization.Name} ~ {!$Organization.Street} ~ {!$Organization.City},
+        {!$Organization.State} ~ {!$Organization.PostalCode}
+      </div>
+      <hr
+        style="height: 2px; border: none; color: #333; background-color: #333"
+      />
+      <table width="100%" border="0" style="text-align: left">
+        <tr>
+          <td width="15%" style="font-weight: bold">Project</td>
+          <td width="32%">{!report.JobName}</td>
+          <td width="33%" style="font-weight: bold">
+            <apex:outputLabel
+              value="{!$ObjectType.ozbee__Production_Job_Report__c.fields.ozbee__Project_Manager__c.Label}"
+            />
+          </td>
+          <td width="20%">{!report.ProjectManager}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold">Name</td>
+          <td>{!report.OpportunityName}</td>
+          <td style="font-weight: bold">Foreman</td>
+          <td>{!report.Foreman}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold">Location</td>
+          <td>{!report.BuildingName}</td>
+          <td style="font-weight: bold">Superintendent</td>
+          <td>{!report.Superintendent}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold"></td>
+          <td></td>
+          <td style="font-weight: bold">Account Manager</td>
+          <td>{!report.AccountManager}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold"></td>
+          <td></td>
+          <td style="font-weight: bold">Safety Manager</td>
+          <td>{!report.SafetyManager}</td>
+        </tr>
+      </table>
+      <hr
+        style="height: 1px; border: none; color: #333; background-color: #333"
+      />
+      <table width="100%">
+        <tr>
+          <td width="50%" style="font-size: 16pt; text-align: left">
+            Transparency Log
+          </td>
+          <td width="50%" style="text-align: right">
+            <span title="">
+              <apex:outputText
+                value="{!CASE( MOD( datevalue(report.CreatedDate) - DATE(1900, 1, 7), 7), 0, 'Sunday', 1, 'Monday', 2, 'Tuesday', 3, 'Wednesday', 4, 'Thursday', 5, 'Friday', 6, 'Saturday','Error')}"
+              />&nbsp;
+              <apex:outputText value="{0,date,long}">
+                <apex:param value="{!report.CreatedDate}" />
+              </apex:outputText>
+            </span>
+          </td>
+        </tr>
+      </table>
+      <br />
+    </div>
+  </div>
+
+  <div style="font-family: sans-serif, Arial Unicode MS; font-size: 10pt">
+    <div class="slds-scope">
+      <apex:outputPanel rendered="{!IF(report.ShowForecast,true,false)}">
+        <apex:outputPanel
+          id="fiveDayForecast"
+          style="padding: 5px; page-break-inside: avoid"
+          rendered="{!dailyForecast != null}"
+        >
+          <header>
+            <div
+              style="color:{!headerColor}; font-size: 16px; font-weight: bold;"
+            >
+              5 Day Forecast
+            </div>
+          </header>
+          <table style="width: 100%" cellspacing="5">
+            <tr>
+              <apex:repeat value="{!dailyForecast}" var="df">
+                <td>
+                  <b
+                    ><apex:outputText
+                      value="{!CASE(
+																MOD( df.dateFormat - DATE( 1900, 1, 7 ), 7 ),
+																0, 'SUN',
+																1, 'MON',
+																2, 'TUES',
+																3, 'WED',
+																4, 'THUR',
+																5, 'FRI', 
+																'SAT')}" /></b
+                  ><br /> <b>High:</b> {!ROUND(df.temp.max,0)}<br />
+                  <b>Low:</b> {!ROUND(df.temp.min, 0)}<br /> <b>Conditions:</b
+                  ><br /> {!df.weather[0].description}
+                </td>
+              </apex:repeat>
+            </tr>
+          </table>
+          <br />
+        </apex:outputPanel>
+      </apex:outputPanel>
+      <hr
+        style="height: 1px; border: none; color: #333; background-color: #333"
+      />
+
+      <apex:outputPanel rendered="{!IF(report.ShowVisitors,true,false)}">
+        <apex:outputPanel
+          id="visitorsToSite"
+          rendered="{!IF(NOT(ISNULL(report.VisitorsToSite)),true,false)}"
+          style="padding: 5px; page-break-inside: never"
+        >
+          <div
+            style="color:{!headerColor}; font-size: 16px; font-weight: bold;"
+          >
+            Visitors to site:
+          </div>
+          <div style="margin: 10px">
+            <apex:outputPanel style="padding: 5px">
+              {!report.VisitorsToSite}
+              <br />
+            </apex:outputPanel>
+          </div>
+          <hr
+            style="
+              height: 1px;
+              border: none;
+              color: #333;
+              background-color: #333;
+            "
+          />
+        </apex:outputPanel>
+      </apex:outputPanel>
+
+      <apex:outputPanel rendered="{!IF(report.ShowActivities,true,false)}">
+        <apex:outputPanel
+          id="activities"
+          rendered="{!IF(NOT(ISNULL(report.Activities)),true,false)}"
+          style="padding: 5px; page-break-inside: never"
+        >
+          <div
+            style="color:{!headerColor}; font-size: 16px; font-weight: bold;"
+          >
+            Activities:
+          </div>
+          <div style="margin: 10px">
+            <apex:outputPanel>
+              {!report.Activities}
+              <br />
+            </apex:outputPanel>
+          </div>
+          <hr
+            style="
+              height: 1px;
+              border: none;
+              color: #333;
+              background-color: #333;
+            "
+          />
+        </apex:outputPanel>
+      </apex:outputPanel>
+
+      <apex:outputPanel rendered="{!IF(report.ShowObservations,true,false)}">
+        <apex:outputPanel
+          id="problemsAndComments"
+          rendered="{!IF(NOT(ISNULL(report.ObservationsAndComments)),true,false)}"
+          style="padding: 5px; page-break-inside: never"
+        >
+          <div
+            style="color:{!headerColor}; font-size: 16px; font-weight: bold;"
+          >
+            Observations and Comments:
+          </div>
+          <div style="margin: 10px">
+            <apex:outputPanel>
+              {!report.ObservationsAndComments}
+              <br />
+            </apex:outputPanel>
+          </div>
+          <hr
+            style="
+              height: 1px;
+              border: none;
+              color: #333;
+              background-color: #333;
+            "
+          />
+        </apex:outputPanel>
+      </apex:outputPanel>
+
+      <apex:outputPanel rendered="{!IF(report.ShowManpower,true,false)}">
+        <div style="color:{!headerColor}; font-size: 16px; font-weight: bold;">
+          Manpower and Operations:
+        </div>
+        <apex:outputPanel
+          id="manpowerAndOps"
+          style="padding: 5px; page-break-inside: never"
+        >
+          <apex:outputPanel
+            rendered="{!IF(manpowerOperations.size > 0,true,false)}"
+          >
+            <table align="center" width="98%" style="padding: 5px">
+              <tr>
+                <!-- <th width="25%" style="border-bottom: 1px solid #aaa; padding-top: 3px; padding-bottom: 2px;">Supplier/Resource</th> -->
+                <th
+                  width="10%"
+                  style="
+                    border-bottom: 1px solid #aaa;
+                    padding-top: 3px;
+                    padding-bottom: 2px;
+                  "
+                >
+                  Qty
+                </th>
+                <th
+                  width="40%"
+                  style="
+                    border-bottom: 1px solid #aaa;
+                    padding-top: 3px;
+                    padding-bottom: 2px;
+                  "
+                >
+                  Trade
+                </th>
+                <th
+                  width="50%"
+                  style="
+                    border-bottom: 1px solid #aaa;
+                    padding-top: 3px;
+                    padding-bottom: 2px;
+                  "
+                >
+                  Operations
+                </th>
+              </tr>
+              <apex:repeat value="{!manpowerOperations}" var="item">
+                <tr>
+                  <!-- <td style="border-bottom: 1px solid #aaa; padding-top: 3px; padding-bottom: 2px;">to be populated later</td> -->
+                  <td
+                    style="
+                      border-bottom: 1px solid #aaa;
+                      padding-top: 3px;
+                      padding-bottom: 2px;
+                    "
+                  >
+                    {!item.ozbee__Crew_Size__c}
+                  </td>
+                  <td
+                    style="
+                      border-bottom: 1px solid #aaa;
+                      padding-top: 3px;
+                      padding-bottom: 2px;
+                    "
+                  >
+                    {!item.ozbee__Work_Category__c}
+                  </td>
+                  <td
+                    style="
+                      border-bottom: 1px solid #aaa;
+                      padding-top: 3px;
+                      padding-bottom: 2px;
+                    "
+                  >
+                    {!item.ozbee__Work_SubCategory__c}
+                  </td>
+                </tr>
+              </apex:repeat>
+            </table>
+          </apex:outputPanel>
+        </apex:outputPanel>
+
+        <div style="width: 95%; padding: 10px">
+          <apex:outputText
+            escape="false"
+            value="{!report.CrewMembers}"
+          ></apex:outputText>
+        </div>
+
+        <hr
+          style="height: 1px; border: none; color: #333; background-color: #333"
+        />
+      </apex:outputPanel>
+
+      <apex:outputPanel rendered="{!IF(report.ShowMaterials,true,false)}">
+        <apex:outputPanel
+          id="materials"
+          rendered="{!IF(materials.size > 0,true,false)}"
+          style="padding: 5px; page-break-inside: never"
+        >
+          <div
+            style="color:{!headerColor}; font-size: 16px; font-weight: bold;"
+          >
+            Materials Installed:
+          </div>
+          <apex:outputPanel>
+            <table align="center" width="98%" style="padding: 5px">
+              <tr>
+                <!-- <th width="25%" style="border-bottom: 1px solid #aaa; padding-top: 3px; padding-bottom: 2px;">Supplier/Resource</th> -->
+                <th
+                  width="10%"
+                  style="
+                    border-bottom: 1px solid #aaa;
+                    padding-top: 3px;
+                    padding-bottom: 2px;
+                  "
+                >
+                  Qty
+                </th>
+                <th
+                  width="40%"
+                  style="
+                    border-bottom: 1px solid #aaa;
+                    padding-top: 3px;
+                    padding-bottom: 2px;
+                  "
+                >
+                  Material
+                </th>
+                <th
+                  width="50%"
+                  style="
+                    border-bottom: 1px solid #aaa;
+                    padding-top: 3px;
+                    padding-bottom: 2px;
+                  "
+                >
+                  Remarks
+                </th>
+              </tr>
+              <apex:repeat value="{!materials}" var="item">
+                <tr>
+                  <!-- <td style="border-bottom: 1px solid #aaa; padding-top: 3px; padding-bottom: 2px;">to be populated later</td> -->
+                  <td
+                    style="
+                      border-bottom: 1px solid #aaa;
+                      padding-top: 3px;
+                      padding-bottom: 2px;
+                    "
+                  >
+                    {!item.ozbee__Quantity__c}
+                  </td>
+                  <td
+                    style="
+                      border-bottom: 1px solid #aaa;
+                      padding-top: 3px;
+                      padding-bottom: 2px;
+                    "
+                  >
+                    {!item.ozbee__Material_Category__c}
+                  </td>
+                  <td
+                    style="
+                      border-bottom: 1px solid #aaa;
+                      padding-top: 3px;
+                      padding-bottom: 2px;
+                    "
+                  >
+                    {!item.ozbee__Material_Subcategory__c},
+                    {!item.ozbee__Unit_of_Measure__c}
+                  </td>
+                </tr>
+              </apex:repeat>
+            </table>
+          </apex:outputPanel>
+          <hr
+            style="
+              height: 1px;
+              border: none;
+              color: #333;
+              background-color: #333;
+            "
+          />
+        </apex:outputPanel>
+      </apex:outputPanel>
+
+      <div
+        id="safetyChecklistItem"
+        style="
+          padding: 5px;
+          page-break-before: always;
+          page-break-inside: avoid;
+        "
+      >
+        <apex:variable value="{!1}" var="photoNum" />
+        <div style="color:{!headerColor}; font-size: 16px; font-weight: bold;">
+          Checklist Item:
+        </div>
+        <apex:repeat value="{!allItems}" var="item">
+          <div style="page-break-inside: avoid">
+            <b style="padding-left: 5px">{!item.name}</b><br /><br />
+            <table align="center" width="98%">
+              <apex:repeat value="{!item.items}" var="taskItem">
+                <tr>
+                  <td style="border: 1px solid #aaa; padding: 3px; width: 80%">
+                    {!taskItem.ozbee__Task_Name__c}
+                  </td>
+                  <td
+                    style="border: 1px solid #aaa; padding: 3px; width: 20%; text-align: center; background-color: {!IF(taskItem.ozbee__Task_Status__c == 'YES', '#0B6623', IF(taskItem.ozbee__Task_Status__c == 'NO', '#FF0000', '{!headerColor}'))}"
+                  >
+                    <apex:outputText
+                      value="{!IF(taskItem.ozbee__Task_Status__c != null, IF(taskItem.ozbee__Task_Status__c == 'YES', 'Yes', 'No'), taskItem.ozbee__Task_Status__c)}"
+                      style="color: white"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td style="border: 1px solid #aaa; padding: 3px" colspan="2">
+                    <apex:outputPanel
+                      rendered="{!taskItem.ozbee__Task_Comment__c != null}"
+                      style="padding-bottom: 2px"
+                    >
+                      <b>Notes:</b><br /> -
+                      {!taskItem.ozbee__Task_Comment__c}<br />
+                    </apex:outputPanel>
+                    <apex:outputPanel
+                      rendered="{!taskItem.ozbee__Daily_Report_Photos__r.size > 0}"
+                      style="padding-bottom: 2px; vertical-align: top"
+                    >
+                      <b>Photos:</b><br />
+                      <div>
+                        <apex:repeat value="{!AllPhotos}" var="p">
+                          <apex:outputPanel
+                            rendered="{!p.photoReportItemId == taskItem.Id}"
+                            style="
+                              padding: 5px;
+                              text-align: left;
+                              display: inline-block;
+                              overflow: hidden;
+                              vertical-align: top;
+                            "
+                          >
+                            <!-- <img src="{!p.photoUrl}" style="width: 300px; padding-top: 75%; !important;"/><br/> -->
+                            <a href="{!p.photoUrl}" target="_blank"
+                              >Photo #{!photoNum}</a
+                            >
+
+                            <apex:variable
+                              var="photoNum"
+                              value="{!photoNum + 1}"
+                            /><br />
+                            <apex:outputLabel
+                              value="{!p.photoComment}"
+                              rendered="{!p.photoComment != null}"
+                              style="
+                                padding-top: 5px;
+                                padding-bottom: 5px;
+                                padding-right: 5px;
+                              "
+                            />
+                          </apex:outputPanel>
+                        </apex:repeat>
+                      </div>
+                    </apex:outputPanel>
+                  </td>
+                </tr>
+              </apex:repeat>
+            </table>
+          </div>
+        </apex:repeat>
+        <apex:outputpanel
+          rendered="{!GeneralPhotoCount > 0}"
+          style="page-break-inside: never"
+        >
+          <table align="center" width="98%">
+            <tr>
+              <td>
+                <b style="padding-left: 5px">General Photos</b><br /><br />
+              </td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  border: 1px solid #aaa;
+                  padding: 3px;
+                  vertical-align: top;
+                "
+                colspan="2"
+              >
+                <apex:repeat value="{!AllPhotos}" var="p">
+                  <apex:outputPanel
+                    rendered="{!p.photoReportItemId == null}"
+                    style="
+                      padding: 5px;
+                      text-align: left;
+                      vertical-align: top;
+                      display: inline-block;
+                      overflow: hidden;
+                    "
+                  >
+                    <img
+                      src="{!p.photoUrl}"
+                      style="width: 300px; padding-top: 75%; !important;"
+                    /><br /> Photo #{!photoNum}<br />
+                    {!p.photoComment}
+                    <apex:variable var="photoNum" value="{!photoNum + 1}" />
+                  </apex:outputPanel>
+                </apex:repeat>
+              </td>
+            </tr>
+          </table>
+        </apex:outputpanel>
+      </div>
+
+      <apex:outputPanel
+        rendered="{!IF(report.ShowExpectedProduction,true,false)}"
+      >
+        <div
+          id="ExpectedProduction"
+          style="padding: 5px; page-break-inside: avoid"
+        >
+          <apex:outputPanel>
+            <div
+              style="color:{!headerColor}; font-size: 16px; font-weight: bold; margin-bottom: 20px"
+            >
+              Expected Production:
+            </div>
+
+            <table align="center" width="98%">
+              <tr>
+                <td style="border: 1px solid #aaa; padding: 3px; width: 70%">
+                  Item
+                </td>
+                <td style="border: 1px solid #aaa; padding: 3px; width: 10%">
+                  Expected
+                </td>
+                <td style="border: 1px solid #aaa; padding: 3px; width: 10%">
+                  Measurement
+                </td>
+                <td style="border: 1px solid #aaa; padding: 3px; width: 10%">
+                  Completed
+                </td>
+              </tr>
+
+              <apex:repeat
+                value="{!report.DailyExpectedProductions}"
+                var="item"
+              >
+                <tr>
+                  <td style="border: 1px solid #aaa; padding: 3px; width: 70%">
+                    {!item.Production_Schedule_Item__r.Name}
+                  </td>
+                  <td style="border: 1px solid #aaa; padding: 3px; width: 10%">
+                    {!item.Expected_Total__c}
+                  </td>
+                  <!-- <td style="border: 1px solid #aaa; padding: 3px; width: 10%">{!item.Measurement__c}</td> -->
+                  <td style="border: 1px solid #aaa; padding: 3px; width: 10%">
+                    {!item.Previously_Completed__c}
+                  </td>
+                  <td style="border: 1px solid #aaa; padding: 3px; width: 10%">
+                    {!item.Completed_Today__c}
+                  </td>
+                </tr>
+              </apex:repeat>
+            </table>
+          </apex:outputPanel>
+        </div>
+      </apex:outputPanel>
+    </div>
+  </div>
+
+  <apex:outputPanel rendered="{!IF(report.ShowDisclaimer,true,false)}">
+    <div
+      class="disclaimer"
+      style="
+        margin-top: 5px;
+        page-break-before: always;
+        page-break-inside: never;
+        font-family: sans-serif, Arial Unicode MS;
+        font-size: 10pt;
+        text-align: left;
+      "
+    >
+      <div style="border: 1px solid #000000; margin: 10px; padding: 5px">
+        <apex:outputText
+          value="{!report.Disclaimer}"
+          escape="false"
+        ></apex:outputText>
+      </div>
+    </div>
+  </apex:outputPanel>
+
+  <div
+    class="bottom-left-div"
+    style="
+      font-family: sans-serif, Arial Unicode MS;
+      text-align: left;
+      font-size: 8pt;
+    "
+  >
+    <div>
+      <img src="{!$Resource.ozbee__PoweredByOzbee}" style="height: 25px" />
+    </div>
+  </div>
+
+  <div
+    class="footer"
+    style="
+      font-family: sans-serif, Arial Unicode MS;
+      text-align: center;
+      font-size: 8pt;
+    "
+  >
+    <div>
+      <hr
+        style="height: 1px; border: none; color: #333; background-color: #333"
+      />
+      <span class="pagenumber" /> of <span class="pagecount" />
+    </div>
+  </div>
+</apex:page>

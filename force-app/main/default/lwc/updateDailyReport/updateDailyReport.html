@@ -1,0 +1,136 @@
+<template>
+  <lightning-modal-header label="Update Daily Report"></lightning-modal-header>
+  <lightning-modal-body>
+    <div if:true={isLoading} class="body-spinner">
+      <lightning-spinner
+        alternative-text="Loading"
+        size="medium"
+      ></lightning-spinner>
+    </div>
+
+    <main if:false={isLoading}>
+      <ul if:true={hasDailyReportData}>
+        <template
+          if:false={showPhotoSelectorPage}
+          for:each={categories}
+          for:item="category"
+        >
+          <li key={category.title}>
+            <h2
+              if:true={category.showTitle}
+              data-category={category.title}
+              onclick={handleClickCategory}
+            >
+              {category.title}
+            </h2>
+            <ul if:true={category.showItems} class="items">
+              <template for:each={category.items} for:item="item">
+                <li key={item.Id}>
+                  <div if:true={category.isDailyReportItem}>
+                    <div class="item_question">
+                      <h3>{item.ozbee__Task_Name__c}</h3>
+                      <div class="item_question-details">
+                        <div>{item.numberOfPhotos}</div>
+                        <lightning-button-icon
+                          icon-name="utility:link"
+                          alternative-text="Attachment"
+                          title="Attachment"
+                          data-item-id={item.Id}
+                          onclick={handleClickPhotoSelector}
+                        ></lightning-button-icon>
+                        <lightning-radio-group
+                          type="button"
+                          options={itemStatusOptions}
+                          value={item.ozbee__Task_Status__c}
+                          onchange={handleChangeValue}
+                          data-category={item.Checklist__c}
+                          data-item-id={item.Id}
+                          data-field="ozbee__Task_Status__c"
+                        ></lightning-radio-group>
+                      </div>
+                    </div>
+                    <lightning-textarea
+                      label="Comments"
+                      value={item.ozbee__Task_Comment__c}
+                      onchange={handleChangeValue}
+                      data-category={item.Checklist__c}
+                      data-item-id={item.Id}
+                      data-field="ozbee__Task_Comment__c"
+                    ></lightning-textarea>
+                  </div>
+                  <div if:true={category.isExpectedProduction}>
+                    <div class="item_question">
+                      <h3>{item.Production_Schedule_Item__r.Name}</h3>
+                      <div class="item_question-details">
+                        <lightning-input
+                          type="number"
+                          label={item.ExpectedTotalLabel}
+                          value={item.Expected_Total__c}
+                          disabled
+                        ></lightning-input>
+                        <lightning-input
+                          type="number"
+                          label={item.PreviouslyCompletedLabel}
+                          value={item.Previously_Completed__c}
+                          disabled
+                        ></lightning-input>
+                        <lightning-input
+                          type="number"
+                          label={item.CompletedTodayLabel}
+                          value={item.Completed_Today__c}
+                          onchange={handleChangeValue}
+                          data-category="Expected Production"
+                          data-item-id={item.Id}
+                          data-field="Completed_Today__c"
+                        ></lightning-input>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </template>
+            </ul>
+          </li>
+        </template>
+        <template if:true={showPhotoSelectorPage}>
+          <div class="select-photos">
+            <h2>
+              Select photos to link to the item ({numberOfSelectedPhotos}
+              Selected)
+            </h2>
+            <h3>{selectedDailyReportItem.ozbee__Task_Name__c}</h3>
+            <div class="photos-container" if:true={hasProjectPhotos}>
+              <template for:each={projectPhotos} for:item="photo">
+                <div
+                  key={photo.id}
+                  class="photo"
+                  data-photo-id={photo.id}
+                  onclick={handleClickPhoto}
+                >
+                  <img src={photo.annotatedURI} alt="Project Photo" />
+                  <h3>Creator: {photo.creator_name}</h3>
+                </div>
+              </template>
+            </div>
+            <h2 if:false={hasProjectPhotos}>No Project Photos</h2>
+          </div>
+        </template>
+      </ul>
+      <div if:false={hasDailyReportData}>No Daily Report Data</div>
+    </main>
+  </lightning-modal-body>
+  <lightning-modal-footer>
+    <div class="footer-buttons">
+      <lightning-button
+        if:true={showBackButton}
+        label="Back"
+        variant="brand"
+        onclick={handleClickBack}
+      ></lightning-button>
+      <lightning-button
+        if:true={showCloseButton}
+        label="Close"
+        onclick={handleClickClose}
+      ></lightning-button>
+    </div>
+  </lightning-modal-footer>
+</template>

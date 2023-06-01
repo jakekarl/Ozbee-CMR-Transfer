@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fieldOverrides>
+        <field>ozbee__Production_Job_Report__c</field>
+        <formula>ozbee__Production_Job_Report__c.Id</formula>
+    </fieldOverrides>
+    <label>Materials Installed</label>
+    <optionsCreateFeedItem>true</optionsCreateFeedItem>
+    <quickActionLayout>
+        <layoutSectionStyle>TwoColumnsLeftToRight</layoutSectionStyle>
+        <quickActionLayoutColumns>
+            <quickActionLayoutItems>
+                <emptySpace>false</emptySpace>
+                <field>ozbee__Material_Category__c</field>
+                <uiBehavior>Required</uiBehavior>
+            </quickActionLayoutItems>
+            <quickActionLayoutItems>
+                <emptySpace>false</emptySpace>
+                <field>ozbee__Material_Subcategory__c</field>
+                <uiBehavior>Required</uiBehavior>
+            </quickActionLayoutItems>
+            <quickActionLayoutItems>
+                <emptySpace>false</emptySpace>
+                <field>ozbee__Quantity__c</field>
+                <uiBehavior>Required</uiBehavior>
+            </quickActionLayoutItems>
+            <quickActionLayoutItems>
+                <emptySpace>false</emptySpace>
+                <field>ozbee__Unit_of_Measure__c</field>
+                <uiBehavior>Required</uiBehavior>
+            </quickActionLayoutItems>
+        </quickActionLayoutColumns>
+        <quickActionLayoutColumns />
+    </quickActionLayout>
+    <targetObject>ozbee__Production_Job_Report_Labor_Item__c</targetObject>
+    <targetParentField>ozbee__Production_Job_Report__c</targetParentField>
+    <targetRecordType
+  >ozbee__Production_Job_Report_Labor_Item__c.ozbee__Materials</targetRecordType>
+    <type>Create</type>
+</QuickAction>

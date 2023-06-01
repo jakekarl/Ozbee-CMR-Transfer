@@ -1,0 +1,38 @@
+<template>
+  <lightning-modal-header
+    label="Create Checklist Items"
+  ></lightning-modal-header>
+  <lightning-modal-body class="slds-is-relative">
+    <div if:true={isLoading} class="body-spinner">
+      <lightning-spinner
+        alternative-text="Loading"
+        size="medium"
+      ></lightning-spinner>
+    </div>
+
+    <div if:false={isLoading} class="slds-align_absolute-center">
+      <lightning-checkbox-group
+        if:true={hasChecklistTemplates}
+        name="checklists"
+        label="Select Checklists"
+        options={checklistOptions}
+        value={selectedChecklists}
+        onchange={handleChangeChecklist}
+      ></lightning-checkbox-group>
+      <h1 if:false={hasChecklistTemplates}>No more available templates</h1>
+    </div>
+  </lightning-modal-body>
+  <lightning-modal-footer>
+    <lightning-button
+      label="Create"
+      variant="brand"
+      disabled={isCreateDisabled}
+      onclick={handleClickCreate}
+    ></lightning-button>
+    <lightning-button
+      label="Close"
+      class="slds-var-m-left_medium"
+      onclick={handleClickClose}
+    ></lightning-button>
+  </lightning-modal-footer>
+</template>

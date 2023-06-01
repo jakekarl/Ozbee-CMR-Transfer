@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Cant_Exceed_Expected_Total</fullName>
+    <active>true</active>
+    <errorConditionFormula
+  >Completed_Today__c +  Previously_Completed__c &gt;  Expected_Total__c</errorConditionFormula>
+    <errorMessage
+  >Previously completed and Completed Today cannot exceed Expected Total</errorMessage>
+</ValidationRule>

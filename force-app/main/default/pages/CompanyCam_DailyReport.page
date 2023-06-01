@@ -1,0 +1,9 @@
+<apex:page
+  standardController="ozbee__Production_Job_Report__c"
+  standardStylesheets="false"
+  docType="html-5.0"
+>
+  <companycam:CompanyCamProjectComponent
+    ProjId="{!ozbee__Production_Job_Report__c.CompanyCam_Project_ID__c}"
+  />
+</apex:page>

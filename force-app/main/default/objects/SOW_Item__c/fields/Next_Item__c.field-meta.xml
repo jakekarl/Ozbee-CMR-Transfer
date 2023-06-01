@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Next_Item__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <externalId>false</externalId>
+    <label>Next Item</label>
+    <lookupFilter>
+        <active>true</active>
+        <errorMessage>Next item must belong to the same SOW</errorMessage>
+        <filterItems>
+            <field>SOW_Item__c.SOW__c</field>
+            <operation>equals</operation>
+            <valueField>$Source.SOW__c</valueField>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>SOW_Item__c</referenceTo>
+    <relationshipLabel>SOW Items (Next Item)</relationshipLabel>
+    <relationshipName>SOW_Items1</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

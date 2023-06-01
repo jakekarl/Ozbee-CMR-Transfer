@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Production_Job_Opportunity</fullName>
+    <active>true</active>
+    <errorConditionFormula>IF(
+   Opportunity__c != ozbee__Production_Job__r.ozbee__Opportunity__c,
+   true,
+   false
+)</errorConditionFormula>
+    <errorMessage
+  >Opportunity must be the same as the production job opportunity</errorMessage>
+</ValidationRule>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Daily_Report__c</fullName>
+    <externalId>false</externalId>
+    <label>Daily Report</label>
+    <referenceTo>ozbee__Production_Job_Report__c</referenceTo>
+    <relationshipLabel>Daily Expected Productions</relationshipLabel>
+    <relationshipName>Daily_Expected_Productions</relationshipName>
+    <relationshipOrder>1</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>
