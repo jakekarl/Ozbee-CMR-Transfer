@@ -2,7 +2,7 @@
 <QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
     <fieldOverrides>
         <field>SOW__c</field>
-        <formula>SOW__c.Id</formula>
+        <formula>ozbee__SOW__c.Id</formula>
     </fieldOverrides>
     <label>New SOW Item</label>
     <optionsCreateFeedItem>true</optionsCreateFeedItem>
