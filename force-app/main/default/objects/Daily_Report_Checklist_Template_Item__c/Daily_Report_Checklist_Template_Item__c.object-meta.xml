@@ -143,7 +143,6 @@
     <allowInChatterGroups>false</allowInChatterGroups>
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
-    <deprecated>false</deprecated>
     <enableActivities>false</enableActivities>
     <enableBulkApi>true</enableBulkApi>
     <enableFeeds>false</enableFeeds>
@@ -154,13 +153,13 @@
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
     <externalSharingModel>ControlledByParent</externalSharingModel>
-    <label>Production Job Checklist Template Item</label>
+    <label>Daily Report Checklist Template Item</label>
     <nameField>
-        <displayFormat>PJCTI-{000000000}</displayFormat>
-        <label>Production Job Checklist Template Items</label>
+        <displayFormat>DRC-{000000000}</displayFormat>
+        <label>Daily Report Checklist Template Item</label>
         <type>AutoNumber</type>
     </nameField>
-    <pluralLabel>Production Job Checklist Template Items</pluralLabel>
+    <pluralLabel>Daily Report Checklist Template Items</pluralLabel>
     <searchLayouts />
     <sharingModel>ControlledByParent</sharingModel>
     <visibility>Public</visibility>

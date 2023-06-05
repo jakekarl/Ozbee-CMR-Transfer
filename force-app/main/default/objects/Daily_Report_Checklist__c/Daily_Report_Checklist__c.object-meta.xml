@@ -149,14 +149,14 @@
     <enableHistory>false</enableHistory>
     <enableLicensing>false</enableLicensing>
     <enableReports>true</enableReports>
-    <enableSearch>false</enableSearch>
+    <enableSearch>true</enableSearch>
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
     <externalSharingModel>ControlledByParent</externalSharingModel>
     <label>Daily Report Checklist</label>
     <nameField>
-        <displayFormat>DRC-{0000}</displayFormat>
-        <label>Daily Report Checklist Name</label>
+        <displayFormat>DRC-{000000000}</displayFormat>
+        <label>Daily Report Checklists</label>
         <type>AutoNumber</type>
     </nameField>
     <pluralLabel>Daily Report Checklists</pluralLabel>

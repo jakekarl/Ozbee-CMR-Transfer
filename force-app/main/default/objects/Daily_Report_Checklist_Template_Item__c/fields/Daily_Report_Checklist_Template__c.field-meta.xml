@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>ozbee__Production_Job_Checklist_Template__c</fullName>
-    <deprecated>false</deprecated>
+    <fullName>Daily_Report_Checklist_Template__c</fullName>
     <externalId>false</externalId>
-    <label>Production Job Checklist Template</label>
-    <referenceTo>ozbee__Production_Job_Checklist_Template__c</referenceTo>
-    <relationshipLabel
-  >Production Job Checklist Template Items</relationshipLabel>
-    <relationshipName>Production_Job_Checklist_Items</relationshipName>
+    <label>Daily Report Checklist Template</label>
+    <referenceTo>Daily_Report_Checklist_Template__c</referenceTo>
+    <relationshipLabel>Daily Report Checklist Template Items</relationshipLabel>
+    <relationshipName>Daily_Report_Checklist_Template_Item</relationshipName>
     <relationshipOrder>0</relationshipOrder>
     <reparentableMasterDetail>false</reparentableMasterDetail>
     <trackTrending>false</trackTrending>

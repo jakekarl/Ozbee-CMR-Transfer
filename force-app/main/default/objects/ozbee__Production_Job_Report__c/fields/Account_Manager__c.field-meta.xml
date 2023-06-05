@@ -5,7 +5,7 @@
     <externalId>false</externalId>
     <label>Account Manager</label>
     <referenceTo>User</referenceTo>
-    <relationshipName>Daily_Reports1</relationshipName>
+    <relationshipName>Daily_Reports2</relationshipName>
     <required>false</required>
     <trackFeedHistory>false</trackFeedHistory>
     <trackTrending>false</trackTrending>
